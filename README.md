@@ -16,5 +16,9 @@ sh docker/start.sh
 ## Usage
 
 
+## TODO:
+- [ ] #1
+- [ ] #2
+
 ## Reference
 - [carla_ros_bridge_docker](https://github.com/atinfinity/carla_ros_bridge_docker)
