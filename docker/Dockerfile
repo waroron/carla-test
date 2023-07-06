@@ -112,3 +112,9 @@ RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && \
     echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc && \
     echo "export SCENARIO_RUNNER_PATH=/home/$USERNAME/scenario_runner" >> ~/.bashrc
 
+
+# for SC-LIO-SAM
+RUN add-apt-repository ppa:borglab/gtsam-release-4.0 && \
+    apt install libgtsam-dev libgtsam-unstable-dev
+
+RUN apt-get install -y ros-melodic-navigation ros-melodic-robot-localization ros-melodic-robot-state-publisher

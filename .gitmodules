@@ -1,0 +1,3 @@
+[submodule "src/SC-LIO-SAM"]
+	path = src/SC-LIO-SAM
+	url = git@github.com:gisbi-kim/SC-LIO-SAM.git
