@@ -1,3 +1,6 @@
 [submodule "src/SC-LIO-SAM"]
 	path = src/SC-LIO-SAM
 	url = git@github.com:gisbi-kim/SC-LIO-SAM.git
+[submodule "src/vdbfusion_ros"]
+	path = src/vdbfusion_ros
+	url = git@github.com:PRBonn/vdbfusion_ros.git
