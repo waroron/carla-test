@@ -1,6 +1,7 @@
 FROM nvidia/cudagl:11.4.2-devel-ubuntu18.04
 
 ARG CARLA_VERSION=0.9.11
+ARG BOOST_VERSION=1.80.0
 ARG GID=1000
 ARG UID=1000
 ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
@@ -35,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pcl-tools \
     libomp5 \
     vulkan-utils \
+    wget \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -87,11 +89,52 @@ RUN pip install \
 
 RUN rosdep init
 
+# for SC-LIO-SAM
+RUN apt-get update
+RUN add-apt-repository ppa:borglab/gtsam-release-4.0 && \
+    apt install -y libgtsam-dev libgtsam-unstable-dev
+
+RUN apt-get install -y ros-melodic-navigation ros-melodic-robot-localization ros-melodic-robot-state-publisher
+
+# for VDBFusion
+# Install OpenVDB
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    libblosc-dev \
+    libboost-iostreams-dev \
+    libboost-system-dev \
+    libboost-system-dev \
+    libeigen3-dev
+
+# install newer CMake manually
+RUN cd /home/$USERNAME && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0.tar.gz && \
+    tar zxvf cmake-3.24.0.tar.gz && \
+    cd cmake-3.24.0/ && \
+    ./bootstrap && \
+    make -j12 && make install -j8
+RUN echo 'export PATH=$HOME/cmake-3.24.0/bin/:$PATH' >> ~/.bashrc && \
+    . ~/.bashrc
+
+# Install Boost
+# https://www.boost.org/doc/libs/1_80_0/more/getting_started/unix-variants.html
+RUN cd /tmp && \
+    BOOST_VERSION_MOD=$(echo $BOOST_VERSION | tr . _) && \
+    wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_MOD}.tar.bz2 && \
+    tar --bzip2 -xf boost_${BOOST_VERSION_MOD}.tar.bz2 && \
+    cd boost_${BOOST_VERSION_MOD} && \
+    ./bootstrap.sh --prefix=/usr/local && \
+    ./b2 install && \
+    rm -rf /tmp/*
+
 USER $USERNAME
 WORKDIR /home/$USERNAME
 RUN rosdep update
 
 SHELL ["/bin/bash", "-c"]
+
+# RUN sudo sh -c 'echo deb https://apt.repos.intel.com/tbb all main > /etc/apt/sources.list.d/intel-tbb.list' && \
+#     sudo apt update && \ 
+#     sudo apt install -y libtbb-dev intel-tbb
 
 # build CARLA ROS bridge
 RUN mkdir -p ~/catkin_ws/src && \
@@ -112,9 +155,26 @@ RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && \
     echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc && \
     echo "export SCENARIO_RUNNER_PATH=/home/$USERNAME/scenario_runner" >> ~/.bashrc
 
+# install tbb
+RUN cd /home/$USERNAME && \
+    git clone https://github.com/wjakob/tbb.git  && \
+    cd tbb && \
+    cd build && \
+    cmake .. && \
+    sudo make -j$(nproc) all install
 
-# for SC-LIO-SAM
-RUN add-apt-repository ppa:borglab/gtsam-release-4.0 && \
-    apt install libgtsam-dev libgtsam-unstable-dev
+# Install
+RUN cd /home/$USERNAME && \
+    git clone --depth 1 https://github.com/nachovizzo/openvdb.git -b nacho/vdbfusion && \
+    cd openvdb && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DUSE_ZLIB=OFF .. && \
+    sudo make -j$(nproc) all install
 
-RUN apt-get install -y ros-melodic-navigation ros-melodic-robot-localization ros-melodic-robot-state-publisher
+# Install VDBfusion
+RUN cd /home/$USERNAME && \
+    git clone --depth 1 https://github.com/PRBonn/vdbfusion.git && \
+    cd vdbfusion && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DUSE_ZLIB=OFF .. && \
+    sudo make -j$(nproc) all install
