@@ -5,6 +5,16 @@
 - NVIDIA docker
 
 ## setup
+- Clone the repository
+```
+git clone --recursive https://github.com/waroron/carla-test.git
+
+# or
+
+git clone https://github.com/waroron/carla-test.git
+git submodule update --init --recursive
+```
+
 
 ```
 docker build -t carla:0.9.11 --build-arg GID=$(id -g) --build-arg UID=$(id -u) -f docker/Dockerfile .

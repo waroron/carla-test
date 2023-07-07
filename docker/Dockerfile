@@ -179,4 +179,4 @@ RUN cd /home/$USERNAME && \
     cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DUSE_ZLIB=OFF .. && \
     sudo make -j$(nproc) all install
 
-RUN sudo apt install python-catkin-tools
+RUN sudo apt install -y python-catkin-tools ros-melodic-geometry2

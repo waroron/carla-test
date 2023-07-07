@@ -7,8 +7,8 @@ lio_sam:
   gpsTopic: "odometry/gpsz"                   # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
-  lidarFrame: "base_link"
-  baselinkFrame: "base_link"
+  lidarFrame: "ego_vehicle/lidar"
+  baselinkFrame: "ego_vehicle"
   odometryFrame: "odom"
   mapFrame: "map"
 
