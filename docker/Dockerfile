@@ -180,3 +180,10 @@ RUN cd /home/$USERNAME && \
     sudo make -j$(nproc) all install
 
 RUN sudo apt install -y python-catkin-tools ros-melodic-geometry2
+
+# Install python3 for Carla
+RUN sudo apt update
+RUN sudo apt install -y python3-pip
+RUN sudo python3 -m pip install --upgrade pip
+RUN sudo python3 -m pip install numpy pygame jaxlib tqdm
+RUN sudo python3 -m pip install --upgrade "jax[cpu]"

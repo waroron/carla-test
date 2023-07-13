@@ -1,6 +1,6 @@
 <launch>
     <!-- launch carla_bridge and spawn -->
-    <include file="$(find carla_test)/launch/carla_spawn_vehicle.launch" />
+    <!-- <include file="$(find carla_test)/launch/carla_spawn_vehicle.launch" /> -->
 
     <arg name="project" default="lio_sam"/>
     

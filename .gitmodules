@@ -4,3 +4,6 @@
 [submodule "src/vdbfusion_ros"]
 	path = src/vdbfusion_ros
 	url = git@github.com:PRBonn/vdbfusion_ros.git
+[submodule "src/LIO-SAM"]
+	path = src/LIO-SAM
+	url = git@github.com:TixiaoShan/LIO-SAM.git
